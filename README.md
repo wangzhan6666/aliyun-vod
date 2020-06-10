@@ -1,6 +1,12 @@
 # aliyun-vod
 使用阿里云的视频点播功能
 
+# 注意事项
+#阿里云 vod
+#不同的服务器，地址不同
+aliyun.vod.file.keyid= 
+aliyun.vod.file.keysecret=
+
 ## 上传报错:  java.lang.NoSuchMethodError: com.aliyuncs.vod.model.v20170321.CreateUploadVideoRequest.setSysConnectTimeout(Ljava/lang/Integer;)V
 是有一个依赖导错了：
 
