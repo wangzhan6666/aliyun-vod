@@ -3,12 +3,19 @@ package com.sise.wangzhan.service.impl;
 import com.aliyun.vod.upload.impl.UploadVideoImpl;
 import com.aliyun.vod.upload.req.UploadStreamRequest;
 import com.aliyun.vod.upload.resp.UploadStreamResponse;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.vod.model.v20170321.DeleteVideoRequest;
+import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthRequest;
+import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthResponse;
 import com.sise.wangzhan.service.VodService;
 import com.sise.wangzhan.utils.ConstantPropertiesUtil;
+import com.sise.wangzhan.utils.InitVodClient;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * @Classname VodServiceImpl
@@ -53,5 +60,75 @@ public class VodServiceImpl implements VodService {
             return null;
         }
     }
+
+    // 2 根据视频id删除阿里云视频
+    @Override
+    public String removeAlyVideo(String id) {
+        try {
+            // 初始化对象
+            DefaultAcsClient client = InitVodClient.initVodClient(ConstantPropertiesUtil.KEY_ID, ConstantPropertiesUtil.KEY_SCRET);
+            // 删除视频的request对象
+            DeleteVideoRequest request = new DeleteVideoRequest();
+            // 向request中设置id
+            request.setVideoIds(id);
+            // 调用初始化对象的方法实现删除
+            client.getAcsResponse(request);
+
+            return "删除成功";
+        }catch (Exception e) {
+            e.printStackTrace();
+            return "删除失败";
+        }
+    }
+
+    // 3 根据多个视频id删除阿里云视频
+    @Override
+    public String removeAlyMoreVideo(List idList) {
+
+        try {
+            // 初始化对象
+            DefaultAcsClient client = InitVodClient.initVodClient(ConstantPropertiesUtil.KEY_ID, ConstantPropertiesUtil.KEY_SCRET);
+            // 删除视频的request对象
+            DeleteVideoRequest request = new DeleteVideoRequest();
+            // 把集合转换为idList转换为字符串的，  1,2,3 这样的形式
+            String ids = StringUtils.join(idList.toArray(), ',');
+
+            // 向request中设置ids
+            request.setVideoIds(ids);
+            // 调用初始化对象的方法实现删除
+            client.getAcsResponse(request);
+
+            return "删除成功";
+        }catch (Exception e) {
+            e.printStackTrace();
+            return "删除失败";
+        }
+    }
+
+    // 4 根据视频id获取视频凭证
+    @Override
+    public String getPlayAuth(String id) {
+
+        try {
+            // 创建初始化对象
+            DefaultAcsClient client = InitVodClient.initVodClient(ConstantPropertiesUtil.KEY_ID, ConstantPropertiesUtil.KEY_SCRET);
+            // 创建auth请求request
+            GetVideoPlayAuthRequest request = new GetVideoPlayAuthRequest();
+            // 设置请求的id
+            request.setVideoId(id);
+
+            GetVideoPlayAuthResponse response = client.getAcsResponse(request);
+            // 获取视频凭证
+            String playAuth = response.getPlayAuth();
+
+            return playAuth;
+        }catch (Exception e) {
+            e.printStackTrace();
+            return "什么都没有";
+        }
+    }
+
+
+
 
 }

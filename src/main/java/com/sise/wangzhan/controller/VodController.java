@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 /**
  * @Classname VodController
  * @Description TODO
@@ -37,21 +39,28 @@ public class VodController {
     @DeleteMapping("removeAlyVideo/{id}")
     public String removeAlyVideo(@PathVariable String id) {
 
-        try {
-            // 初始化对象
-            DefaultAcsClient client = InitVodClient.initVodClient(ConstantPropertiesUtil.KEY_ID, ConstantPropertiesUtil.KEY_SCRET);
-            // 删除视频的request对象
-            DeleteVideoRequest request = new DeleteVideoRequest();
-            // 向request中设置id
-            request.setVideoIds(id);
-            // 调用初始化对象的方法实现删除
-            client.getAcsResponse(request);
+        String info = vodService.removeAlyVideo(id);
 
-            return "删除成功";
-        }catch (Exception e) {
-            e.printStackTrace();
-            return "删除失败";
-        }
+        return info;
+    }
+
+
+    // 3 根据多个视频id删除阿里云视频
+    @DeleteMapping("removeAlyMoreVideo")
+    public String removeAlyMoreVideo(@RequestParam("idList") List<String> idList) {
+
+        String info = vodService.removeAlyMoreVideo(idList);
+
+        return info;
+    }
+
+    // 4 根据视频id获取视频凭证
+    @GetMapping("getPlayAuth/{id}")
+    public String getPlayAuth(@PathVariable String id) {
+
+        String playAuth = vodService.getPlayAuth(id);
+
+        return playAuth;
     }
 
 }
